@@ -77,8 +77,11 @@ export default function ChildProfilePage() {
       <div style={containerStyle}>
         <div style={headerStyle}>
           <div>
-            <div style={headerLabelStyle}>Child Profile</div>
-            <h1 style={headerTitleStyle}>ข้อมูลเด็กเล็ก</h1>
+<div style={headerLabelStyle}>MODS-EDU-DSPM</div>
+<h1 style={headerTitleStyle}>ข้อมูลเด็กเล็ก</h1>
+<p style={{margin:0,fontSize:'14px',opacity:0.9}}>
+ศูนย์พัฒนาเด็กเล็กตำบลเหมืองจี้
+</p>            
           </div>
         </div>
 

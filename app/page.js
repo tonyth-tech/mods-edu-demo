@@ -5,7 +5,7 @@ import { supabase } from '../lib/supabase'
 
 export default function Home() {
   const [children, setChildren] = useState([])
-  const [centerDisplayName, setCenterDisplayName] = useState('ศูนย์พัฒนาเด็กเล็กเทศบาลตำบลเหมืองจี้')
+const [centerDisplayName, setCenterDisplayName] = useState('ศูนย์พัฒนาเด็กเล็กตำบลเหมืองจี้')
   const [search, setSearch] = useState('')
   const [selectedClass, setSelectedClass] = useState('ทั้งหมด')
 
@@ -73,7 +73,7 @@ export default function Home() {
         <div className="mods-header">
           <div className="mods-header-text">
             <div className="mods-header-label">
-              MODS-EDU
+              MODS-EDU-DSPM
             </div>
             <h1 className="mods-title">Teacher Dashboard</h1>
             <p className="mods-subtitle">
