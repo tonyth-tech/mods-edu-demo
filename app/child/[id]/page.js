@@ -80,13 +80,24 @@ export default function ChildProfilePage() {
         <h3>{child.first_name} {child.last_name}</h3>
 
         <p><b>รหัสเด็ก:</b> {child.child_code}</p>
+        <p><b>ชื่อเล่น:</b> {child.nickname || '-'}</p>
         <p><b>เพศ:</b> {child.gender}</p>
         <p><b>อายุ:</b> {child.age_display}</p>
         <p><b>ห้องเรียน:</b> {child.class_room}</p>
         <p><b>ส่วนสูง:</b> {child.height_cm || '-'}</p>
         <p><b>น้ำหนัก:</b> {child.weight_kg || '-'}</p>
         <p><b>ผู้ปกครอง:</b> {child.guardian_name || '-'}</p>
-        <p><b>เบอร์โทร:</b> {child.guardian_phone || '-'}</p>
+        <p>
+          <b>เบอร์โทร:</b>{' '}
+          {child.guardian_phone ? (
+            <a
+              href={`tel:${child.guardian_phone}`}
+              style={{ color: '#2563eb', textDecoration: 'none', fontWeight: 'bold' }}
+            >
+              {child.guardian_phone}
+            </a>
+          ) : '-'}
+        </p>
         <p><b>สถานะ:</b> {child.status}</p>
 
         <div style={{ marginTop: '25px' }}>
