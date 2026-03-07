@@ -20,7 +20,7 @@ export default function Home() {
   }
 
   return (
-    <div style={{padding:"40px",fontFamily:"Arial"}}>
+    <div style={{padding:"40px",fontFamily:"Arial", color:"#000", background:"#ffffff"}}>
 
       <h1>MODS-EDU</h1>
       <h2>Teacher Dashboard</h2>
