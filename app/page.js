@@ -65,6 +65,21 @@ export default function Home() {
               >
                 Assess Development
               </a>
+<a
+  href="/report"
+  style={{
+    display:"inline-block",
+    marginRight:"10px",
+    padding:"8px 14px",
+    border:"1px solid #ccc",
+    borderRadius:"6px",
+    textDecoration:"none",
+    color:"#000",
+    background:"#fff"
+  }}
+>
+  View Report Book
+</a>
 
             </div>
 
