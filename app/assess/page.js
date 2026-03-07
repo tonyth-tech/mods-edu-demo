@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { supabase } from '../../lib/supabase'
 
 export default function AssessPage() {
   const [checks, setChecks] = useState({
@@ -16,11 +17,33 @@ export default function AssessPage() {
     thinking2: false,
   })
 
+  const [message, setMessage] = useState('')
+
   function toggleCheck(key) {
     setChecks((prev) => ({
       ...prev,
       [key]: !prev[key],
     }))
+  }
+
+  async function saveAssessment() {
+    setMessage('Saving...')
+
+    const summary = JSON.stringify(checks)
+
+    const { error } = await supabase.from('assessments').insert([
+      {
+        term: '1',
+        academic_year: '2569',
+        note: summary,
+      },
+    ])
+
+    if (error) {
+      setMessage('Save failed: ' + error.message)
+    } else {
+      setMessage('Assessment saved successfully')
+    }
   }
 
   return (
@@ -99,6 +122,7 @@ export default function AssessPage() {
 
         <div style={{ marginTop: '30px' }}>
           <button
+            onClick={saveAssessment}
             style={{
               padding: '12px 20px',
               borderRadius: '8px',
@@ -116,6 +140,12 @@ export default function AssessPage() {
             Back to Dashboard
           </a>
         </div>
+
+        {message && (
+          <p style={{ marginTop: '20px', color: '#2563eb' }}>
+            {message}
+          </p>
+        )}
       </div>
     </div>
   )
