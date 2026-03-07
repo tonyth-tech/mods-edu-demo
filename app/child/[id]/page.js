@@ -79,12 +79,12 @@ export default function ChildProfilePage() {
         <div style={headerStyle}>
           <div>
             <div style={headerLabelStyle}>Child Profile</div>
-            <h1 style={headerTitleStyle}>ข้อมูลเด็กแต่ละคน</h1>
-            <p style={headerSubtitleStyle}>
-              ข้อมูลพื้นฐานสำหรับครูประจำชั้นและการติดตามพัฒนาการ
-            </p>
+            <h1 style={headerTitleStyle}>ข้อมูลเด็กเล็ก</h1>
           </div>
+        </div>
 
+        {/* Back button out of blue zone */}
+        <div style={{ marginBottom: '14px' }}>
           <a href="/" style={headerBackButtonStyle}>
             กลับหน้าแรก
           </a>
@@ -110,7 +110,7 @@ export default function ChildProfilePage() {
               </div>
             </div>
 
-            <div style={{ flex: 1 }}>
+            <div style={{ flex: 1, minWidth: 0 }}>
               <div style={nicknameStyle}>{displayNickname}</div>
               <div style={fullnameStyle}>
                 {child.first_name} {child.last_name}
@@ -186,72 +186,62 @@ const pageStyle = {
 }
 
 const containerStyle = {
-  maxWidth: '980px',
+  maxWidth: '920px',
   margin: '0 auto',
 }
 
 const headerStyle = {
   background: 'linear-gradient(135deg, #4da3ff 0%, #6ec5ff 100%)',
   color: '#fff',
-  borderRadius: '22px',
-  padding: '20px',
-  boxShadow: '0 10px 30px rgba(77,163,255,0.18)',
-  marginBottom: '18px',
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  gap: '16px',
-  flexWrap: 'wrap',
+  borderRadius: '20px',
+  padding: '16px 18px',
+  boxShadow: '0 10px 24px rgba(77,163,255,0.16)',
+  marginBottom: '12px',
 }
 
 const headerLabelStyle = {
   fontSize: '12px',
   opacity: 0.95,
-  marginBottom: '6px',
+  marginBottom: '4px',
 }
 
 const headerTitleStyle = {
   margin: 0,
-  fontSize: '28px',
+  fontSize: '24px',
   lineHeight: 1.2,
-}
-
-const headerSubtitleStyle = {
-  margin: '8px 0 0 0',
-  fontSize: '14px',
-  opacity: 0.95,
 }
 
 const headerBackButtonStyle = {
   display: 'inline-block',
-  padding: '10px 16px',
+  padding: '10px 14px',
   borderRadius: '12px',
   textDecoration: 'none',
   color: '#183153',
   background: '#ffffff',
   fontWeight: 'bold',
   border: '1px solid #d9e6f2',
+  boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
 }
 
 const mainCardStyle = {
   background: '#fff',
   border: '1px solid #e6eef5',
-  borderRadius: '22px',
-  padding: '20px',
-  boxShadow: '0 10px 24px rgba(19,49,83,0.06)',
+  borderRadius: '20px',
+  padding: '18px',
+  boxShadow: '0 8px 20px rgba(19,49,83,0.05)',
 }
 
 const profileTopStyle = {
   display: 'flex',
   alignItems: 'center',
-  gap: '18px',
+  gap: '14px',
   flexWrap: 'wrap',
-  marginBottom: '20px',
+  marginBottom: '16px',
 }
 
 const photoWrapStyle = {
-  width: '120px',
-  height: '120px',
+  width: '88px',
+  height: '88px',
   borderRadius: '50%',
   overflow: 'hidden',
   background: 'linear-gradient(135deg, #ffe7b8 0%, #ffd3e1 100%)',
@@ -259,7 +249,7 @@ const photoWrapStyle = {
   alignItems: 'center',
   justifyContent: 'center',
   flexShrink: 0,
-  boxShadow: '0 8px 20px rgba(0,0,0,0.08)',
+  boxShadow: '0 6px 16px rgba(0,0,0,0.08)',
 }
 
 const photoStyle = {
@@ -274,27 +264,27 @@ const photoFallbackStyle = {
   height: '100%',
   alignItems: 'center',
   justifyContent: 'center',
-  fontSize: '34px',
+  fontSize: '28px',
   fontWeight: 'bold',
   color: '#183153',
 }
 
 const nicknameStyle = {
-  fontSize: '28px',
+  fontSize: '24px',
   fontWeight: 'bold',
   lineHeight: 1.2,
   color: '#183153',
 }
 
 const fullnameStyle = {
-  marginTop: '6px',
-  fontSize: '18px',
+  marginTop: '4px',
+  fontSize: '16px',
   color: '#35506b',
 }
 
 const codeStyle = {
-  marginTop: '8px',
-  fontSize: '14px',
+  marginTop: '6px',
+  fontSize: '13px',
   color: '#5b6b82',
 }
 
@@ -302,42 +292,42 @@ const badgeRowStyle = {
   display: 'flex',
   gap: '8px',
   flexWrap: 'wrap',
-  marginTop: '12px',
+  marginTop: '10px',
 }
 
 const softBadgeStyle = {
   display: 'inline-block',
-  padding: '8px 12px',
+  padding: '7px 11px',
   borderRadius: '999px',
   background: '#eef6ff',
   color: '#183153',
-  fontSize: '13px',
+  fontSize: '12px',
   fontWeight: 'bold',
   border: '1px solid #d9e6f2',
 }
 
 const infoGridStyle = {
   display: 'grid',
-  gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-  gap: '12px',
-  marginBottom: '20px',
+  gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+  gap: '10px',
+  marginBottom: '18px',
 }
 
 const infoCardStyle = {
   background: '#f8fbff',
   border: '1px solid #e6eef5',
-  borderRadius: '16px',
-  padding: '14px',
+  borderRadius: '14px',
+  padding: '12px',
 }
 
 const infoLabelStyle = {
-  fontSize: '12px',
+  fontSize: '11px',
   color: '#5b6b82',
-  marginBottom: '6px',
+  marginBottom: '5px',
 }
 
 const infoValueStyle = {
-  fontSize: '16px',
+  fontSize: '15px',
   fontWeight: 'bold',
   color: '#183153',
   lineHeight: 1.4,
@@ -345,14 +335,14 @@ const infoValueStyle = {
 
 const actionWrapStyle = {
   display: 'flex',
-  gap: '12px',
+  gap: '10px',
   flexWrap: 'wrap',
 }
 
 const primaryButtonStyle = {
   display: 'inline-block',
-  padding: '12px 18px',
-  borderRadius: '14px',
+  padding: '11px 16px',
+  borderRadius: '12px',
   textDecoration: 'none',
   color: '#fff',
   background: '#2563eb',
@@ -361,8 +351,8 @@ const primaryButtonStyle = {
 
 const secondaryButtonStyle = {
   display: 'inline-block',
-  padding: '12px 18px',
-  borderRadius: '14px',
+  padding: '11px 16px',
+  borderRadius: '12px',
   textDecoration: 'none',
   color: '#183153',
   background: '#ffffff',
