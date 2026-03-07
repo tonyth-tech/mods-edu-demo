@@ -67,7 +67,6 @@ export default function Home() {
     <div className="mods-page">
       <div className="mods-container">
 
-        {/* HEADER */}
         <div className="mods-header">
           <div className="mods-header-text">
             <div className="mods-header-label">
@@ -88,14 +87,12 @@ export default function Home() {
           </div>
         </div>
 
-        {/* STATS */}
         <div className="mods-stats">
           <MiniStat title="เด็กทั้งหมด" value={children.length} bg="#e0f2fe" />
           <MiniStat title="กำลังแสดง" value={filteredChildren.length} bg="#dcfce7" />
           <MiniStat title="ห้องเรียน" value={classOptions.length - 1} bg="#fef3c7" />
         </div>
 
-        {/* SEARCH + FILTER */}
         <div className="mods-tools">
           <input
             type="text"
@@ -119,13 +116,15 @@ export default function Home() {
             <a href="/export" className="mods-chip mods-chip-link">
               Export Excel
             </a>
+
+            <a href="/attendance" className="mods-chip mods-chip-link">
+              เช็กชื่อ
+            </a>
           </div>
         </div>
 
-        {/* CHILD GRID */}
         <div className="mods-grid">
           {filteredChildren.map((child) => {
-
             const displayName =
               child.nickname
                 ? `น้อง${child.nickname}`
