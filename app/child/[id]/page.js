@@ -1,17 +1,25 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useParams } from 'next/navigation'
 import { supabase } from '../../../lib/supabase'
 
-export default function ChildProfilePage({ params }) {
+export default function ChildProfilePage() {
+  const params = useParams()
   const [child, setChild] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [errorMsg, setErrorMsg] = useState('')
 
   useEffect(() => {
-    fetchChild()
-  }, [])
+    if (params?.id) {
+      fetchChild()
+    }
+  }, [params?.id])
 
   async function fetchChild() {
+    setLoading(true)
+    setErrorMsg('')
+
     const { data, error } = await supabase
       .from('children')
       .select('*')
@@ -19,7 +27,8 @@ export default function ChildProfilePage({ params }) {
       .single()
 
     if (error) {
-      console.log(error)
+      console.log('child profile error:', error)
+      setErrorMsg(error.message)
     } else {
       setChild(data)
     }
@@ -31,6 +40,16 @@ export default function ChildProfilePage({ params }) {
     return (
       <div style={{ padding: '40px', fontFamily: 'Arial', color: '#000', background: '#fff', minHeight: '100vh' }}>
         <h1>Loading child profile...</h1>
+      </div>
+    )
+  }
+
+  if (errorMsg) {
+    return (
+      <div style={{ padding: '40px', fontFamily: 'Arial', color: '#000', background: '#fff', minHeight: '100vh' }}>
+        <h1>Child Profile Error</h1>
+        <p style={{ color: 'red' }}>{errorMsg}</p>
+        <a href="/" style={{ color: '#2563eb', textDecoration: 'none' }}>Back to Dashboard</a>
       </div>
     )
   }
@@ -65,8 +84,8 @@ export default function ChildProfilePage({ params }) {
         <p><b>เพศ:</b> {child.gender}</p>
         <p><b>อายุ:</b> {child.age_display}</p>
         <p><b>ห้องเรียน:</b> {child.class_room}</p>
-        <p><b>ส่วนสูง:</b> {child.height_cm || '-'} ซม.</p>
-        <p><b>น้ำหนัก:</b> {child.weight_kg || '-'} กก.</p>
+        <p><b>ส่วนสูง:</b> {child.height_cm || '-'}</p>
+        <p><b>น้ำหนัก:</b> {child.weight_kg || '-'}</p>
         <p><b>ผู้ปกครอง:</b> {child.guardian_name || '-'}</p>
         <p><b>เบอร์โทร:</b> {child.guardian_phone || '-'}</p>
         <p><b>สถานะ:</b> {child.status}</p>
