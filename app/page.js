@@ -20,7 +20,7 @@ export default function Home() {
   }
 
   return (
-    <div style={{padding:"40px",fontFamily:"Arial", color:"#000", background:"#ffffff"}}>
+    <div style={{padding:"40px",fontFamily:"Arial",color:"#000",background:"#fff"}}>
 
       <h1>MODS-EDU</h1>
       <h2>Teacher Dashboard</h2>
@@ -50,13 +50,21 @@ export default function Home() {
 
             <div style={{marginTop:"10px"}}>
 
-              <button style={{marginRight:"10px"}}>
-                View Profile
-              </button>
-
-              <button>
+              <a
+                href="/assess"
+                style={{
+                  display:"inline-block",
+                  marginRight:"10px",
+                  padding:"8px 14px",
+                  border:"1px solid #ccc",
+                  borderRadius:"6px",
+                  textDecoration:"none",
+                  color:"#000",
+                  background:"#fff"
+                }}
+              >
                 Assess Development
-              </button>
+              </a>
 
             </div>
 

@@ -24,7 +24,15 @@ export default function AssessPage() {
   }
 
   return (
-    <div style={{ padding: '40px', fontFamily: 'Arial', color: '#000', background: '#fff', minHeight: '100vh' }}>
+    <div
+      style={{
+        padding: '40px',
+        fontFamily: 'Arial',
+        color: '#000',
+        background: '#fff',
+        minHeight: '100vh',
+      }}
+    >
       <h1>Assess Development</h1>
       <h2>แบบประเมินพัฒนาการเด็ก</h2>
 
@@ -90,21 +98,19 @@ export default function AssessPage() {
         />
 
         <div style={{ marginTop: '30px' }}>
-            <a
-  href="/assess"
-  style={{
-    display: 'inline-block',
-    padding: '8px 14px',
-    border: '1px solid #ccc',
-    borderRadius: '6px',
-    textDecoration: 'none',
-    color: '#000',
-    background: '#fff'
-  }}
->
-  Assess Development
-</a>
-          
+          <button
+            style={{
+              padding: '12px 20px',
+              borderRadius: '8px',
+              border: 'none',
+              background: '#2563eb',
+              color: '#fff',
+              cursor: 'pointer',
+              marginRight: '15px',
+            }}
+          >
+            Save Assessment
+          </button>
 
           <a href="/" style={{ color: '#2563eb', textDecoration: 'none' }}>
             Back to Dashboard
@@ -116,11 +122,7 @@ export default function AssessPage() {
 }
 
 function SectionTitle({ title }) {
-  return (
-    <h3 style={{ marginTop: '25px', marginBottom: '10px' }}>
-      {title}
-    </h3>
-  )
+  return <h3 style={{ marginTop: '25px', marginBottom: '10px' }}>{title}</h3>
 }
 
 function CheckItem({ label, checked, onChange }) {
