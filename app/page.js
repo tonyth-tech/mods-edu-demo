@@ -52,10 +52,7 @@ export default function Home() {
               background: '#fafafa'
             }}
           >
-            <h3>
-              {child.first_name} {child.last_name}
-            </h3>
-
+            <h3>{child.first_name} {child.last_name}</h3>
             <p>Age: {child.age_display}</p>
             <p>Class: {child.class_room}</p>
 
@@ -77,7 +74,7 @@ export default function Home() {
               </a>
 
               <a
-                href="/assess"
+                href={`/assess/${child.id}`}
                 style={{
                   display: 'inline-block',
                   marginRight: '10px',
@@ -93,7 +90,7 @@ export default function Home() {
               </a>
 
               <a
-                href="/report"
+                href={`/report/${child.id}`}
                 style={{
                   display: 'inline-block',
                   padding: '8px 14px',

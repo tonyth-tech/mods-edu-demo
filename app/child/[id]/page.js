@@ -27,7 +27,6 @@ export default function ChildProfilePage() {
       .single()
 
     if (error) {
-      console.log('child profile error:', error)
       setErrorMsg(error.message)
     } else {
       setChild(data)
@@ -92,7 +91,7 @@ export default function ChildProfilePage() {
 
         <div style={{ marginTop: '25px' }}>
           <a
-            href="/assess"
+            href={`/assess/${child.id}`}
             style={{
               display: 'inline-block',
               marginRight: '10px',
@@ -108,7 +107,7 @@ export default function ChildProfilePage() {
           </a>
 
           <a
-            href="/report"
+            href={`/report/${child.id}`}
             style={{
               display: 'inline-block',
               marginRight: '10px',
