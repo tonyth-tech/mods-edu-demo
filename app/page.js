@@ -24,7 +24,22 @@ export default function Home() {
 
       <h1>MODS-EDU</h1>
       <h2>Teacher Dashboard</h2>
-
+<div style={{ marginBottom: '20px' }}>
+  <a
+    href="/export"
+    style={{
+      display: 'inline-block',
+      padding: '10px 16px',
+      border: '1px solid #ccc',
+      borderRadius: '8px',
+      textDecoration: 'none',
+      color: '#000',
+      background: '#fff'
+    }}
+  >
+    Export Excel
+  </a>
+</div>
       <div style={{marginTop:"30px"}}>
 
         {children.map((child) => (
