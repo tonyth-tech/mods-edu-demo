@@ -4,66 +4,68 @@ import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 
 export default function Home() {
+
   const [children, setChildren] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [errorMsg, setErrorMsg] = useState('')
 
   useEffect(() => {
     fetchChildren()
   }, [])
 
   async function fetchChildren() {
-    setLoading(true)
-    setErrorMsg('')
-
-    const { data, error } = await supabase
+    const { data } = await supabase
       .from('children')
       .select('*')
 
-    if (error) {
-      console.log('Supabase error:', error)
-      setErrorMsg(error.message)
-    } else {
-      setChildren(data || [])
-    }
-
-    setLoading(false)
+    setChildren(data || [])
   }
 
   return (
-    <div style={{ padding: '40px', fontFamily: 'Arial' }}>
-      <h1>MODS-EDU Demo</h1>
-      <h2>Child Registry</h2>
+    <div style={{padding:"40px",fontFamily:"Arial"}}>
 
-      {loading && <p>Loading children...</p>}
+      <h1>MODS-EDU</h1>
+      <h2>Teacher Dashboard</h2>
 
-      {!loading && errorMsg && (
-        <div style={{ color: 'red', marginBottom: '20px' }}>
-          Error: {errorMsg}
-        </div>
-      )}
+      <div style={{marginTop:"30px"}}>
 
-      {!loading && !errorMsg && children.length === 0 && (
-        <p>No children found</p>
-      )}
+        {children.map((child) => (
 
-      {children.map((child) => (
-        <div
-          key={child.id}
-          style={{
-            border: '1px solid #ddd',
-            padding: '15px',
-            marginBottom: '10px',
-            borderRadius: '8px',
-          }}
-        >
-          <b>
-            {child.first_name} {child.last_name}
-          </b>
-          <p>Age: {child.age_display}</p>
-          <p>Class: {child.class_room}</p>
-        </div>
-      ))}
+          <div
+            key={child.id}
+            style={{
+              border:"1px solid #ddd",
+              padding:"20px",
+              marginBottom:"15px",
+              borderRadius:"10px",
+              background:"#fafafa"
+            }}
+          >
+
+            <h3>
+              {child.first_name} {child.last_name}
+            </h3>
+
+            <p>Age: {child.age_display}</p>
+
+            <p>Class: {child.class_room}</p>
+
+            <div style={{marginTop:"10px"}}>
+
+              <button style={{marginRight:"10px"}}>
+                View Profile
+              </button>
+
+              <button>
+                Assess Development
+              </button>
+
+            </div>
+
+          </div>
+
+        ))}
+
+      </div>
+
     </div>
   )
 }
