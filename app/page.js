@@ -5,21 +5,29 @@ import { supabase } from '../lib/supabase'
 
 export default function Home() {
   const [children, setChildren] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [errorMsg, setErrorMsg] = useState('')
 
   useEffect(() => {
     fetchChildren()
   }, [])
 
   async function fetchChildren() {
+    setLoading(true)
+    setErrorMsg('')
+
     const { data, error } = await supabase
       .from('children')
       .select('*')
 
     if (error) {
       console.log('Supabase error:', error)
+      setErrorMsg(error.message)
     } else {
       setChildren(data || [])
     }
+
+    setLoading(false)
   }
 
   return (
@@ -27,7 +35,17 @@ export default function Home() {
       <h1>MODS-EDU Demo</h1>
       <h2>Child Registry</h2>
 
-      {children.length === 0 && <p>Loading children...</p>}
+      {loading && <p>Loading children...</p>}
+
+      {!loading && errorMsg && (
+        <div style={{ color: 'red', marginBottom: '20px' }}>
+          Error: {errorMsg}
+        </div>
+      )}
+
+      {!loading && !errorMsg && children.length === 0 && (
+        <p>No children found</p>
+      )}
 
       {children.map((child) => (
         <div
