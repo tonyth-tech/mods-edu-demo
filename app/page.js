@@ -6,81 +6,90 @@ import { supabase } from '../lib/supabase'
 export default function Home() {
   const [children, setChildren] = useState([])
   const [search, setSearch] = useState('')
+  const [selectedClass, setSelectedClass] = useState('ทั้งหมด')
 
   useEffect(() => {
     fetchChildren()
   }, [])
 
   async function fetchChildren() {
-    const { data } = await supabase.from('children').select('*')
+    const { data } = await supabase
+      .from('children')
+      .select('*')
+      .order('first_name', { ascending: true })
+
     setChildren(data || [])
   }
 
+  const classOptions = useMemo(() => {
+    const rooms = [...new Set(children.map((c) => c.class_room).filter(Boolean))]
+    return ['ทั้งหมด', ...rooms]
+  }, [children])
+
   const filteredChildren = useMemo(() => {
     const q = search.trim().toLowerCase()
-    if (!q) return children
 
     return children.filter((child) => {
       const fullName = `${child.first_name || ''} ${child.last_name || ''}`.toLowerCase()
       const code = (child.child_code || '').toLowerCase()
-      return fullName.includes(q) || code.includes(q)
+      const room = child.class_room || ''
+
+      const matchSearch = !q || fullName.includes(q) || code.includes(q)
+      const matchClass = selectedClass === 'ทั้งหมด' || room === selectedClass
+
+      return matchSearch && matchClass
     })
-  }, [children, search])
+  }, [children, search, selectedClass])
 
   return (
     <div
       style={{
         minHeight: '100vh',
-        background: 'linear-gradient(180deg, #f5fbff 0%, #ffffff 100%)',
+        background: 'linear-gradient(180deg, #f2f9ff 0%, #ffffff 100%)',
         fontFamily: 'Arial, sans-serif',
         color: '#183153',
-        padding: '20px',
+        padding: '16px',
       }}
     >
-      <div
-        style={{
-          maxWidth: '1100px',
-          margin: '0 auto',
-        }}
-      >
+      <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
         {/* Header */}
         <div
           style={{
             background: 'linear-gradient(135deg, #4da3ff 0%, #6ec5ff 100%)',
             color: '#fff',
             borderRadius: '20px',
-            padding: '20px',
+            padding: '18px',
             boxShadow: '0 10px 30px rgba(77,163,255,0.18)',
-            marginBottom: '20px',
+            marginBottom: '16px',
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            gap: '16px',
+            gap: '12px',
           }}
         >
-          <div>
-            <div style={{ fontSize: '13px', opacity: 0.95, marginBottom: '6px' }}>
+          <div style={{ minWidth: 0 }}>
+            <div style={{ fontSize: '12px', opacity: 0.95, marginBottom: '4px' }}>
               MODS-EDU
             </div>
-            <h1 style={{ margin: 0, fontSize: '28px', lineHeight: 1.2 }}>
+            <h1 style={{ margin: 0, fontSize: '24px', lineHeight: 1.2 }}>
               Teacher Dashboard
             </h1>
-            <p style={{ marginTop: '8px', marginBottom: 0, fontSize: '15px', opacity: 0.95 }}>
-              ระบบดูแลเด็กปฐมวัยสำหรับครูและกองการศึกษา
+            <p style={{ margin: '6px 0 0 0', fontSize: '14px', opacity: 0.95 }}>
+              เลือกเด็กจากรูป ค้นหาด้วยชื่อหรือรหัส
             </p>
           </div>
 
           <div
             style={{
               flexShrink: 0,
-              width: '88px',
-              height: '88px',
+              width: '72px',
+              height: '72px',
               borderRadius: '50%',
-              background: 'rgba(255,255,255,0.18)',
+              background: 'rgba(255,255,255,0.16)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              padding: '8px',
+              padding: '6px',
             }}
           >
             <img
@@ -97,51 +106,33 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Top actions */}
+        {/* Summary */}
         <div
           style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            gap: '12px',
-            flexWrap: 'wrap',
-            marginBottom: '18px',
+            display: 'grid',
+            gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
+            gap: '10px',
+            marginBottom: '14px',
           }}
         >
-          <div>
-            <h2 style={{ margin: 0, fontSize: '22px' }}>รายชื่อเด็ก</h2>
-            <p style={{ margin: '6px 0 0 0', color: '#5b6b82', fontSize: '14px' }}>
-              ค้นหาด้วยชื่อหรือรหัสเด็ก แล้วแตะรูปเพื่อเปิดข้อมูล
-            </p>
-          </div>
-
-          <a
-            href="/export"
-            style={{
-              display: 'inline-block',
-              padding: '10px 16px',
-              borderRadius: '12px',
-              textDecoration: 'none',
-              color: '#183153',
-              background: '#ffffff',
-              border: '1px solid #d9e6f2',
-              boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
-              fontWeight: 'bold',
-            }}
-          >
-            Export Excel
-          </a>
+          <MiniStat title="เด็กทั้งหมด" value={children.length} bg="#e0f2fe" />
+          <MiniStat title="กำลังแสดง" value={filteredChildren.length} bg="#dcfce7" />
+          <MiniStat title="ห้องเรียน" value={classOptions.length - 1} bg="#fef3c7" />
         </div>
 
-        {/* Search */}
+        {/* Sticky tools */}
         <div
           style={{
-            marginBottom: '20px',
-            background: '#fff',
+            position: 'sticky',
+            top: '8px',
+            zIndex: 10,
+            background: '#ffffffee',
+            backdropFilter: 'blur(8px)',
             border: '1px solid #e6eef5',
-            borderRadius: '16px',
+            borderRadius: '18px',
             padding: '14px',
             boxShadow: '0 8px 20px rgba(19,49,83,0.05)',
+            marginBottom: '16px',
           }}
         >
           <input
@@ -158,16 +149,61 @@ export default function Home() {
               color: '#183153',
               outline: 'none',
               boxSizing: 'border-box',
+              marginBottom: '12px',
             }}
           />
+
+          <div
+            style={{
+              display: 'flex',
+              gap: '8px',
+              overflowX: 'auto',
+              paddingBottom: '4px',
+            }}
+          >
+            {classOptions.map((room) => (
+              <button
+                key={room}
+                onClick={() => setSelectedClass(room)}
+                style={{
+                  whiteSpace: 'nowrap',
+                  padding: '10px 14px',
+                  borderRadius: '999px',
+                  border: selectedClass === room ? '1px solid #3b82f6' : '1px solid #d9e6f2',
+                  background: selectedClass === room ? '#dbeafe' : '#fff',
+                  color: '#183153',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                }}
+              >
+                {room}
+              </button>
+            ))}
+
+            <a
+              href="/export"
+              style={{
+                whiteSpace: 'nowrap',
+                padding: '10px 14px',
+                borderRadius: '999px',
+                border: '1px solid #d9e6f2',
+                background: '#fff',
+                color: '#183153',
+                textDecoration: 'none',
+                fontWeight: 'bold',
+              }}
+            >
+              Export Excel
+            </a>
+          </div>
         </div>
 
-        {/* Small photo cards */}
+        {/* Children grid */}
         <div
           style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
-            gap: '14px',
+            gap: '12px',
           }}
         >
           {filteredChildren.map((child) => (
@@ -180,15 +216,15 @@ export default function Home() {
                 background: '#fff',
                 border: '1px solid #e6eef5',
                 borderRadius: '18px',
-                padding: '14px 10px',
+                padding: '12px 8px',
                 boxShadow: '0 8px 20px rgba(19,49,83,0.05)',
                 textAlign: 'center',
               }}
             >
               <div
                 style={{
-                  width: '72px',
-                  height: '72px',
+                  width: '70px',
+                  height: '70px',
                   borderRadius: '50%',
                   margin: '0 auto 10px auto',
                   overflow: 'hidden',
@@ -213,10 +249,10 @@ export default function Home() {
 
               <div
                 style={{
-                  fontSize: '14px',
+                  fontSize: '13px',
                   fontWeight: 'bold',
-                  lineHeight: 1.3,
-                  minHeight: '36px',
+                  lineHeight: 1.25,
+                  minHeight: '34px',
                 }}
               >
                 {child.first_name} {child.last_name}
@@ -224,9 +260,9 @@ export default function Home() {
 
               <div
                 style={{
-                  fontSize: '12px',
+                  fontSize: '11px',
                   color: '#5b6b82',
-                  marginTop: '6px',
+                  marginTop: '5px',
                 }}
               >
                 {child.child_code || '-'}
@@ -234,9 +270,9 @@ export default function Home() {
 
               <div
                 style={{
-                  fontSize: '12px',
+                  fontSize: '11px',
                   color: '#5b6b82',
-                  marginTop: '4px',
+                  marginTop: '3px',
                 }}
               >
                 {child.class_room || '-'}
@@ -261,6 +297,22 @@ export default function Home() {
           </div>
         )}
       </div>
+    </div>
+  )
+}
+
+function MiniStat({ title, value, bg }) {
+  return (
+    <div
+      style={{
+        background: bg,
+        borderRadius: '16px',
+        padding: '14px',
+        boxShadow: '0 6px 16px rgba(0,0,0,0.04)',
+      }}
+    >
+      <div style={{ fontSize: '12px', color: '#4a6078', marginBottom: '6px' }}>{title}</div>
+      <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#183153' }}>{value}</div>
     </div>
   )
 }
