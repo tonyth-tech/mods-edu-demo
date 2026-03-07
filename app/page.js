@@ -119,15 +119,18 @@ export default function Home() {
               className="mods-card"
             >
               <div className="mods-avatar">
-                {child.photo_url ? (
-                  <img
-                    src={child.photo_url}
-                    alt={`${child.first_name} ${child.last_name}`}
-                    className="mods-avatar-img"
-                  />
-                ) : (
-                  <span>{(child.first_name || 'ด').slice(0, 1)}</span>
-                )}
+                <img
+  src={`/children/${child.child_code}.jpg`}
+  alt={`${child.first_name} ${child.last_name}`}
+  className="mods-avatar-img"
+  onError={(e) => {
+    e.currentTarget.style.display = 'none'
+    e.currentTarget.nextSibling.style.display = 'flex'
+  }}
+/>
+<span style={{ display: 'none', width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center' }}>
+  {(child.first_name || 'ด').slice(0, 1)}
+</span>
               </div>
 
               <div className="mods-card-name">
