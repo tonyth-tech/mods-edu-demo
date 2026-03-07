@@ -257,3 +257,49 @@ body {
     display: inline-block !important;
   }
 }
+.child-profile-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.child-profile-btn {
+  display: inline-block;
+  padding: 11px 16px;
+  border-radius: 12px;
+  text-decoration: none;
+  font-weight: bold;
+  border: 1px solid #d9e6f2;
+  background: #ffffff;
+  color: #183153;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.child-profile-btn-primary {
+  background: #2563eb;
+  color: #ffffff;
+  border-color: #2563eb;
+}
+
+.child-profile-btn-secondary {
+  background: #ffffff;
+  color: #183153;
+}
+
+.child-profile-tablet-up,
+.child-profile-desktop-only {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .child-profile-tablet-up {
+    display: inline-block;
+  }
+}
+
+@media (min-width: 1100px) {
+  .child-profile-desktop-only {
+    display: inline-block;
+  }
+}

@@ -75,7 +75,6 @@ export default function ChildProfilePage() {
   return (
     <div style={pageStyle}>
       <div style={containerStyle}>
-        {/* Header */}
         <div style={headerStyle}>
           <div>
             <div style={headerLabelStyle}>Child Profile</div>
@@ -83,14 +82,35 @@ export default function ChildProfilePage() {
           </div>
         </div>
 
-        {/* Back button out of blue zone */}
-        <div style={{ marginBottom: '14px' }}>
-          <a href="/" style={headerBackButtonStyle}>
+        {/* Action buttons */}
+        <div className="child-profile-actions">
+          <a href="/" className="child-profile-btn child-profile-btn-secondary">
             กลับหน้าแรก
           </a>
+
+          <a
+            href={`/assess/${child.id}`}
+            className="child-profile-btn child-profile-btn-primary"
+          >
+            บันทึกพัฒนาการ
+          </a>
+
+          <a
+            href={`/report/${child.id}`}
+            className="child-profile-btn child-profile-btn-secondary child-profile-tablet-up"
+          >
+            ดูสมุดพก
+          </a>
+
+          <button
+            type="button"
+            onClick={() => window.print()}
+            className="child-profile-btn child-profile-btn-secondary child-profile-desktop-only"
+          >
+            พิมพ์ข้อมูลเด็ก
+          </button>
         </div>
 
-        {/* Main profile card */}
         <div style={mainCardStyle}>
           <div style={profileTopStyle}>
             <div style={photoWrapStyle}>
@@ -124,7 +144,6 @@ export default function ChildProfilePage() {
             </div>
           </div>
 
-          {/* Info grid */}
           <div style={infoGridStyle}>
             <InfoCard label="ชื่อเล่น" value={child.nickname || '-'} />
             <InfoCard label="เพศ" value={child.gender || '-'} />
@@ -146,21 +165,6 @@ export default function ChildProfilePage() {
                 ) : '-'
               }
             />
-          </div>
-
-          {/* Quick actions */}
-          <div style={actionWrapStyle}>
-            <a href={`/assess/${child.id}`} style={primaryButtonStyle}>
-              บันทึกพัฒนาการ
-            </a>
-
-            <a href={`/report/${child.id}`} style={secondaryButtonStyle}>
-              ดูสมุดพกดิจิทัล
-            </a>
-
-            <a href="/attendance" style={secondaryButtonStyle}>
-              ไปหน้าเช็กชื่อ
-            </a>
           </div>
         </div>
       </div>
@@ -209,18 +213,6 @@ const headerTitleStyle = {
   margin: 0,
   fontSize: '24px',
   lineHeight: 1.2,
-}
-
-const headerBackButtonStyle = {
-  display: 'inline-block',
-  padding: '10px 14px',
-  borderRadius: '12px',
-  textDecoration: 'none',
-  color: '#183153',
-  background: '#ffffff',
-  fontWeight: 'bold',
-  border: '1px solid #d9e6f2',
-  boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
 }
 
 const mainCardStyle = {
@@ -310,7 +302,6 @@ const infoGridStyle = {
   display: 'grid',
   gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
   gap: '10px',
-  marginBottom: '18px',
 }
 
 const infoCardStyle = {
@@ -331,33 +322,6 @@ const infoValueStyle = {
   fontWeight: 'bold',
   color: '#183153',
   lineHeight: 1.4,
-}
-
-const actionWrapStyle = {
-  display: 'flex',
-  gap: '10px',
-  flexWrap: 'wrap',
-}
-
-const primaryButtonStyle = {
-  display: 'inline-block',
-  padding: '11px 16px',
-  borderRadius: '12px',
-  textDecoration: 'none',
-  color: '#fff',
-  background: '#2563eb',
-  fontWeight: 'bold',
-}
-
-const secondaryButtonStyle = {
-  display: 'inline-block',
-  padding: '11px 16px',
-  borderRadius: '12px',
-  textDecoration: 'none',
-  color: '#183153',
-  background: '#ffffff',
-  fontWeight: 'bold',
-  border: '1px solid #d9e6f2',
 }
 
 const backLinkStyle = {
