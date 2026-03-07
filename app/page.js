@@ -45,12 +45,19 @@ export default function Home() {
     const q = search.trim().toLowerCase()
 
     return children.filter((child) => {
-      const fullName = `${child.first_name || ''} ${child.last_name || ''}`.toLowerCase()
+      const nickname = (child.nickname || '').toLowerCase()
+      const firstName = (child.first_name || '').toLowerCase()
       const code = (child.child_code || '').toLowerCase()
       const room = child.class_room || ''
 
-      const matchSearch = !q || fullName.includes(q) || code.includes(q)
-      const matchClass = selectedClass === 'ทั้งหมด' || room === selectedClass
+      const matchSearch =
+        !q ||
+        nickname.includes(q) ||
+        firstName.includes(q) ||
+        code.includes(q)
+
+      const matchClass =
+        selectedClass === 'ทั้งหมด' || room === selectedClass
 
       return matchSearch && matchClass
     })
@@ -59,6 +66,8 @@ export default function Home() {
   return (
     <div className="mods-page">
       <div className="mods-container">
+
+        {/* HEADER */}
         <div className="mods-header">
           <div className="mods-header-text">
             <div className="mods-header-label">
@@ -66,7 +75,7 @@ export default function Home() {
             </div>
             <h1 className="mods-title">Teacher Dashboard</h1>
             <p className="mods-subtitle">
-              เลือกเด็กจากรูป ค้นหาด้วยชื่อหรือรหัส
+              แสดงชื่อเล่นเด็กแบบ PDPA-friendly และค้นหาได้จากชื่อเล่น ชื่อจริง หรือรหัสเด็ก
             </p>
           </div>
 
@@ -79,16 +88,18 @@ export default function Home() {
           </div>
         </div>
 
+        {/* STATS */}
         <div className="mods-stats">
           <MiniStat title="เด็กทั้งหมด" value={children.length} bg="#e0f2fe" />
           <MiniStat title="กำลังแสดง" value={filteredChildren.length} bg="#dcfce7" />
           <MiniStat title="ห้องเรียน" value={classOptions.length - 1} bg="#fef3c7" />
         </div>
 
+        {/* SEARCH + FILTER */}
         <div className="mods-tools">
           <input
             type="text"
-            placeholder="ค้นหาชื่อเด็ก หรือ Student ID"
+            placeholder="ค้นหาด้วยชื่อเล่น ชื่อจริง หรือ Student ID"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="mods-search"
@@ -111,41 +122,60 @@ export default function Home() {
           </div>
         </div>
 
+        {/* CHILD GRID */}
         <div className="mods-grid">
-          {filteredChildren.map((child) => (
-            <a
-              key={child.id}
-              href={`/child/${child.id}`}
-              className="mods-card"
-            >
-              <div className="mods-avatar">
-                <img
-  src={`/children/${child.child_code}.jpg`}
-  alt={`${child.first_name} ${child.last_name}`}
-  className="mods-avatar-img"
-  onError={(e) => {
-    e.currentTarget.style.display = 'none'
-    e.currentTarget.nextSibling.style.display = 'flex'
-  }}
-/>
-<span style={{ display: 'none', width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center' }}>
-  {(child.first_name || 'ด').slice(0, 1)}
-</span>
-              </div>
+          {filteredChildren.map((child) => {
 
-              <div className="mods-card-name">
-                {child.first_name} {child.last_name}
-              </div>
+            const displayName =
+              child.nickname
+                ? `น้อง${child.nickname}`
+                : `น้อง${child.first_name || ''}`
 
-              <div className="mods-card-code">
-                {child.child_code || '-'}
-              </div>
+            return (
+              <a
+                key={child.id}
+                href={`/child/${child.id}`}
+                className="mods-card"
+              >
+                <div className="mods-avatar">
+                  <img
+                    src={`/children/${child.child_code}.jpg`}
+                    alt={displayName}
+                    className="mods-avatar-img"
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none'
+                      if (e.currentTarget.nextSibling) {
+                        e.currentTarget.nextSibling.style.display = 'flex'
+                      }
+                    }}
+                  />
+                  <span
+                    style={{
+                      display: 'none',
+                      width: '100%',
+                      height: '100%',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}
+                  >
+                    {(child.nickname || child.first_name || 'ด').slice(0, 1)}
+                  </span>
+                </div>
 
-              <div className="mods-card-room">
-                {child.class_room || '-'}
-              </div>
-            </a>
-          ))}
+                <div className="mods-card-name">
+                  {displayName}
+                </div>
+
+                <div className="mods-card-code">
+                  {child.child_code || '-'}
+                </div>
+
+                <div className="mods-card-room">
+                  {child.class_room || '-'}
+                </div>
+              </a>
+            )
+          })}
         </div>
 
         {filteredChildren.length === 0 && (
