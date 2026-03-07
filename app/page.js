@@ -1,22 +1,31 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { supabase } from '../lib/supabase'
 
 export default function Home() {
   const [children, setChildren] = useState([])
+  const [search, setSearch] = useState('')
 
   useEffect(() => {
     fetchChildren()
   }, [])
 
   async function fetchChildren() {
-    const { data } = await supabase
-      .from('children')
-      .select('*')
-
+    const { data } = await supabase.from('children').select('*')
     setChildren(data || [])
   }
+
+  const filteredChildren = useMemo(() => {
+    const q = search.trim().toLowerCase()
+    if (!q) return children
+
+    return children.filter((child) => {
+      const fullName = `${child.first_name || ''} ${child.last_name || ''}`.toLowerCase()
+      const code = (child.child_code || '').toLowerCase()
+      return fullName.includes(q) || code.includes(q)
+    })
+  }, [children, search])
 
   return (
     <div
@@ -25,7 +34,7 @@ export default function Home() {
         background: 'linear-gradient(180deg, #f5fbff 0%, #ffffff 100%)',
         fontFamily: 'Arial, sans-serif',
         color: '#183153',
-        padding: '32px',
+        padding: '20px',
       }}
     >
       <div
@@ -34,55 +43,75 @@ export default function Home() {
           margin: '0 auto',
         }}
       >
+        {/* Header */}
         <div
           style={{
             background: 'linear-gradient(135deg, #4da3ff 0%, #6ec5ff 100%)',
             color: '#fff',
             borderRadius: '20px',
-            padding: '28px',
+            padding: '20px',
             boxShadow: '0 10px 30px rgba(77,163,255,0.18)',
-            marginBottom: '24px',
-          }}
-        >
-          <div style={{ fontSize: '14px', opacity: 0.95, marginBottom: '8px' }}>
-            MODS-EDU
-          </div>
-          <h1 style={{ margin: 0, fontSize: '34px', lineHeight: 1.2 }}>
-            Teacher Dashboard
-          </h1>
-          <p style={{ marginTop: '10px', marginBottom: 0, fontSize: '16px', opacity: 0.95 }}>
-            ระบบดูแลเด็กปฐมวัยสำหรับครูและกองการศึกษา
-          </p>
-        </div>
-
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+            marginBottom: '20px',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
             gap: '16px',
-            marginBottom: '24px',
           }}
         >
-          <StatCard title="เด็กในระบบ" value={children.length} color="#e0f2fe" />
-          <StatCard title="พร้อมประเมิน" value={children.length} color="#dcfce7" />
-          <StatCard title="สมุดพกดิจิทัล" value={children.length} color="#fef3c7" />
-          <StatCard title="ส่งออกข้อมูล" value="Excel" color="#ede9fe" />
+          <div>
+            <div style={{ fontSize: '13px', opacity: 0.95, marginBottom: '6px' }}>
+              MODS-EDU
+            </div>
+            <h1 style={{ margin: 0, fontSize: '28px', lineHeight: 1.2 }}>
+              Teacher Dashboard
+            </h1>
+            <p style={{ marginTop: '8px', marginBottom: 0, fontSize: '15px', opacity: 0.95 }}>
+              ระบบดูแลเด็กปฐมวัยสำหรับครูและกองการศึกษา
+            </p>
+          </div>
+
+          <div
+            style={{
+              flexShrink: 0,
+              width: '88px',
+              height: '88px',
+              borderRadius: '50%',
+              background: 'rgba(255,255,255,0.18)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '8px',
+            }}
+          >
+            <img
+              src="/maungjee-logo.png"
+              alt="Municipality Logo"
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'contain',
+                borderRadius: '50%',
+                background: '#fff',
+              }}
+            />
+          </div>
         </div>
 
+        {/* Top actions */}
         <div
           style={{
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            marginBottom: '20px',
             gap: '12px',
             flexWrap: 'wrap',
+            marginBottom: '18px',
           }}
         >
           <div>
-            <h2 style={{ margin: 0, fontSize: '24px' }}>รายชื่อเด็ก</h2>
-            <p style={{ margin: '6px 0 0 0', color: '#5b6b82' }}>
-              เลือกเด็กเพื่อดูข้อมูล บันทึกพัฒนาการ และดูสมุดพก
+            <h2 style={{ margin: 0, fontSize: '22px' }}>รายชื่อเด็ก</h2>
+            <p style={{ margin: '6px 0 0 0', color: '#5b6b82', fontSize: '14px' }}>
+              ค้นหาด้วยชื่อหรือรหัสเด็ก แล้วแตะรูปเพื่อเปิดข้อมูล
             </p>
           </div>
 
@@ -90,7 +119,7 @@ export default function Home() {
             href="/export"
             style={{
               display: 'inline-block',
-              padding: '12px 18px',
+              padding: '10px 16px',
               borderRadius: '12px',
               textDecoration: 'none',
               color: '#183153',
@@ -104,111 +133,134 @@ export default function Home() {
           </a>
         </div>
 
+        {/* Search */}
+        <div
+          style={{
+            marginBottom: '20px',
+            background: '#fff',
+            border: '1px solid #e6eef5',
+            borderRadius: '16px',
+            padding: '14px',
+            boxShadow: '0 8px 20px rgba(19,49,83,0.05)',
+          }}
+        >
+          <input
+            type="text"
+            placeholder="ค้นหาชื่อเด็ก หรือ Student ID"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            style={{
+              width: '100%',
+              padding: '14px 16px',
+              borderRadius: '12px',
+              border: '1px solid #d9e6f2',
+              fontSize: '16px',
+              color: '#183153',
+              outline: 'none',
+              boxSizing: 'border-box',
+            }}
+          />
+        </div>
+
+        {/* Small photo cards */}
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(290px, 1fr))',
-            gap: '18px',
+            gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
+            gap: '14px',
           }}
         >
-          {children.map((child) => (
-            <div
+          {filteredChildren.map((child) => (
+            <a
               key={child.id}
+              href={`/child/${child.id}`}
               style={{
+                textDecoration: 'none',
+                color: '#183153',
                 background: '#fff',
                 border: '1px solid #e6eef5',
                 borderRadius: '18px',
-                padding: '20px',
-                boxShadow: '0 8px 20px rgba(19,49,83,0.06)',
+                padding: '14px 10px',
+                boxShadow: '0 8px 20px rgba(19,49,83,0.05)',
+                textAlign: 'center',
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '16px' }}>
-                <div
-                  style={{
-                    width: '56px',
-                    height: '56px',
-                    borderRadius: '50%',
-                    background: 'linear-gradient(135deg, #ffe7b8 0%, #ffd3e1 100%)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: '22px',
-                    fontWeight: 'bold',
-                    color: '#183153',
-                  }}
-                >
-                  {child.first_name?.slice(0, 1) || 'D'}
-                </div>
-
-                <div>
-                  <h3 style={{ margin: 0, fontSize: '21px' }}>
-                    {child.first_name} {child.last_name}
-                  </h3>
-                  <p style={{ margin: '6px 0 0 0', color: '#5b6b82', fontSize: '14px' }}>
-                    รหัส: {child.child_code || '-'}
-                  </p>
-                </div>
+              <div
+                style={{
+                  width: '72px',
+                  height: '72px',
+                  borderRadius: '50%',
+                  margin: '0 auto 10px auto',
+                  overflow: 'hidden',
+                  background: 'linear-gradient(135deg, #ffe7b8 0%, #ffd3e1 100%)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '24px',
+                  fontWeight: 'bold',
+                }}
+              >
+                {child.photo_url ? (
+                  <img
+                    src={child.photo_url}
+                    alt={`${child.first_name} ${child.last_name}`}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  />
+                ) : (
+                  <span>{(child.first_name || 'ด').slice(0, 1)}</span>
+                )}
               </div>
 
               <div
                 style={{
-                  background: '#f8fbff',
-                  borderRadius: '14px',
-                  padding: '14px',
-                  marginBottom: '16px',
+                  fontSize: '14px',
+                  fontWeight: 'bold',
+                  lineHeight: 1.3,
+                  minHeight: '36px',
                 }}
               >
-                <p style={{ margin: '0 0 8px 0' }}><b>Age:</b> {child.age_display || '-'}</p>
-                <p style={{ margin: '0 0 8px 0' }}><b>Class:</b> {child.class_room || '-'}</p>
-                <p style={{ margin: 0 }}><b>Status:</b> {child.status || '-'}</p>
+                {child.first_name} {child.last_name}
               </div>
 
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
-                <ActionButton href={`/child/${child.id}`} label="View Profile" bg="#ffffff" />
-                <ActionButton href={`/assess/${child.id}`} label="Assess Development" bg="#e0f2fe" />
-                <ActionButton href={`/report/${child.id}`} label="View Report Book" bg="#dcfce7" />
+              <div
+                style={{
+                  fontSize: '12px',
+                  color: '#5b6b82',
+                  marginTop: '6px',
+                }}
+              >
+                {child.child_code || '-'}
               </div>
-            </div>
+
+              <div
+                style={{
+                  fontSize: '12px',
+                  color: '#5b6b82',
+                  marginTop: '4px',
+                }}
+              >
+                {child.class_room || '-'}
+              </div>
+            </a>
           ))}
         </div>
+
+        {filteredChildren.length === 0 && (
+          <div
+            style={{
+              marginTop: '20px',
+              background: '#fff',
+              border: '1px solid #e6eef5',
+              borderRadius: '16px',
+              padding: '20px',
+              textAlign: 'center',
+              color: '#5b6b82',
+            }}
+          >
+            ไม่พบข้อมูลเด็ก
+          </div>
+        )}
       </div>
     </div>
-  )
-}
-
-function StatCard({ title, value, color }) {
-  return (
-    <div
-      style={{
-        background: color,
-        borderRadius: '18px',
-        padding: '18px',
-        boxShadow: '0 6px 16px rgba(0,0,0,0.05)',
-      }}
-    >
-      <div style={{ fontSize: '14px', color: '#4a6078', marginBottom: '8px' }}>{title}</div>
-      <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#183153' }}>{value}</div>
-    </div>
-  )
-}
-
-function ActionButton({ href, label, bg }) {
-  return (
-    <a
-      href={href}
-      style={{
-        display: 'inline-block',
-        padding: '10px 14px',
-        border: '1px solid #d9e6f2',
-        borderRadius: '12px',
-        textDecoration: 'none',
-        color: '#183153',
-        background: bg,
-        fontSize: '14px',
-        fontWeight: 'bold',
-      }}
-    >
-      {label}
-    </a>
   )
 }
