@@ -248,3 +248,12 @@ body {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
+.mods-export-desktop-only {
+  display: none !important;
+}
+
+@media (min-width: 1100px) {
+  .mods-export-desktop-only {
+    display: inline-block !important;
+  }
+}

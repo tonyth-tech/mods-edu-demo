@@ -5,7 +5,7 @@ import { supabase } from '../lib/supabase'
 
 export default function Home() {
   const [children, setChildren] = useState([])
-  const [centerName, setCenterName] = useState('MODS-EDU')
+  const [centerDisplayName, setCenterDisplayName] = useState('ศูนย์พัฒนาเด็กเล็กเทศบาลตำบลเหมืองจี้')
   const [search, setSearch] = useState('')
   const [selectedClass, setSelectedClass] = useState('ทั้งหมด')
 
@@ -26,13 +26,16 @@ export default function Home() {
   async function fetchCenter() {
     const { data } = await supabase
       .from('centers')
-      .select('name')
+      .select('name, municipality_name')
       .limit(1)
 
-    if (data && data.length > 0 && data[0].name) {
-      setCenterName(`MODS-EDU-${data[0].name}`)
-    } else {
-      setCenterName('MODS-EDU-ศพด. 02')
+    if (data && data.length > 0) {
+      const center = data[0]
+      if (center.name && center.name.trim() !== '') {
+        setCenterDisplayName(center.name)
+      } else if (center.municipality_name && center.municipality_name.trim() !== '') {
+        setCenterDisplayName(`ศูนย์พัฒนาเด็กเล็ก${center.municipality_name}`)
+      }
     }
   }
 
@@ -70,11 +73,11 @@ export default function Home() {
         <div className="mods-header">
           <div className="mods-header-text">
             <div className="mods-header-label">
-              {centerName}
+              MODS-EDU
             </div>
             <h1 className="mods-title">Teacher Dashboard</h1>
             <p className="mods-subtitle">
-              แสดงชื่อเล่นเด็กแบบ PDPA-friendly และค้นหาได้จากชื่อเล่น ชื่อจริง หรือรหัสเด็ก
+              {centerDisplayName}
             </p>
           </div>
 
@@ -103,6 +106,10 @@ export default function Home() {
           />
 
           <div className="mods-filter-row">
+            <a href="/attendance" className="mods-chip mods-chip-link">
+              เช็กชื่อ
+            </a>
+
             {classOptions.map((room) => (
               <button
                 key={room}
@@ -113,12 +120,8 @@ export default function Home() {
               </button>
             ))}
 
-            <a href="/export" className="mods-chip mods-chip-link">
+            <a href="/export" className="mods-chip mods-chip-link mods-export-desktop-only">
               Export Excel
-            </a>
-
-            <a href="/attendance" className="mods-chip mods-chip-link">
-              เช็กชื่อ
             </a>
           </div>
         </div>
