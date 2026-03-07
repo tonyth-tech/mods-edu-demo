@@ -69,7 +69,7 @@ export default function Home() {
         >
           <div style={{ minWidth: 0 }}>
             <div style={{ fontSize: '12px', opacity: 0.95, marginBottom: '4px' }}>
-              MODS-EDU
+              MODS-EDU-ศพด.02
             </div>
             <h1 style={{ margin: 0, fontSize: '24px', lineHeight: 1.2 }}>
               Teacher Dashboard
