@@ -9,6 +9,8 @@ export default function ChildProfilePage() {
   const [child, setChild] = useState(null)
   const [loading, setLoading] = useState(true)
   const [errorMsg, setErrorMsg] = useState('')
+  const [uploading, setUploading] = useState(false)
+  const [uploadMsg, setUploadMsg] = useState('')
 
   useEffect(() => {
     if (params?.id) {
@@ -33,6 +35,52 @@ export default function ChildProfilePage() {
     }
 
     setLoading(false)
+  }
+
+  async function handlePhotoUpload(event) {
+    const file = event.target.files?.[0]
+    if (!file || !child) return
+
+    setUploading(true)
+    setUploadMsg('กำลังอัปโหลดรูป...')
+
+    const extension = file.name.split('.').pop()?.toLowerCase() || 'jpg'
+    const filePath = `${child.child_code}.${extension}`
+
+    const { error: uploadError } = await supabase.storage
+      .from('children-photos')
+      .upload(filePath, file, { upsert: true })
+
+    if (uploadError) {
+      setUploadMsg('อัปโหลดไม่สำเร็จ: ' + uploadError.message)
+      setUploading(false)
+      return
+    }
+
+    const { data: publicUrlData } = supabase.storage
+      .from('children-photos')
+      .getPublicUrl(filePath)
+
+    const publicUrl = publicUrlData?.publicUrl || ''
+
+    const { error: updateError } = await supabase
+      .from('children')
+      .update({ photo_url: publicUrl })
+      .eq('id', child.id)
+
+    if (updateError) {
+      setUploadMsg('บันทึก URL รูปไม่สำเร็จ: ' + updateError.message)
+      setUploading(false)
+      return
+    }
+
+    setChild((prev) => ({
+      ...prev,
+      photo_url: publicUrl,
+    }))
+
+    setUploadMsg('อัปโหลดรูปสำเร็จแล้ว')
+    setUploading(false)
   }
 
   if (loading) {
@@ -77,15 +125,11 @@ export default function ChildProfilePage() {
       <div style={containerStyle}>
         <div style={headerStyle}>
           <div>
-<div style={headerLabelStyle}>MODS-EDU-DSPM</div>
-<h1 style={headerTitleStyle}>ข้อมูลเด็กเล็ก</h1>
-<p style={{margin:0,fontSize:'14px',opacity:0.9}}>
-ศูนย์พัฒนาเด็กเล็กตำบลเหมืองจี้
-</p>            
+            <div style={headerLabelStyle}>MODS-EDU-DSPM</div>
+            <h1 style={headerTitleStyle}>ข้อมูลเด็กเล็ก</h1>
           </div>
         </div>
 
-        {/* Action buttons */}
         <div className="child-profile-actions">
           <a href="/" className="child-profile-btn child-profile-btn-secondary">
             กลับหน้าแรก
@@ -118,7 +162,7 @@ export default function ChildProfilePage() {
           <div style={profileTopStyle}>
             <div style={photoWrapStyle}>
               <img
-                src={`/children/${child.child_code}.jpg`}
+                src={child.photo_url || `/children/${child.child_code}.jpg`}
                 alt={displayNickname}
                 style={photoStyle}
                 onError={(e) => {
@@ -143,6 +187,36 @@ export default function ChildProfilePage() {
               <div style={badgeRowStyle}>
                 <span style={softBadgeStyle}>{child.class_room || '-'}</span>
                 <span style={softBadgeStyle}>{child.status || '-'}</span>
+              </div>
+
+              <div style={{ marginTop: '12px' }}>
+                <label
+                  style={{
+                    display: 'inline-block',
+                    padding: '10px 14px',
+                    borderRadius: '12px',
+                    border: '1px solid #d9e6f2',
+                    background: '#fff',
+                    cursor: 'pointer',
+                    fontWeight: 'bold',
+                    color: '#183153',
+                  }}
+                >
+                  {uploading ? 'กำลังอัปโหลด...' : 'อัปโหลดรูปเด็ก'}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handlePhotoUpload}
+                    style={{ display: 'none' }}
+                    disabled={uploading}
+                  />
+                </label>
+
+                {uploadMsg && (
+                  <div style={{ marginTop: '8px', fontSize: '13px', color: '#2563eb' }}>
+                    {uploadMsg}
+                  </div>
+                )}
               </div>
             </div>
           </div>

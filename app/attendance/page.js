@@ -97,7 +97,7 @@ export default function AttendancePage() {
           }}
         >
           <div style={{ fontSize: '12px', opacity: 0.95, marginBottom: '4px' }}>
-            MODS-EDU Attendance
+            MODS-EDU-DSPM
           </div>
           <h1 style={{ margin: 0, fontSize: '24px', lineHeight: 1.2 }}>
             Quick Attendance Mode
@@ -219,7 +219,7 @@ export default function AttendancePage() {
                       }}
                     >
                       <img
-                        src={`/children/${child.child_code}.jpg`}
+                        src={child.photo_url || `/children/${child.child_code}.jpg`}
                         alt={getDisplayName(child)}
                         style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                         onError={(e) => {
