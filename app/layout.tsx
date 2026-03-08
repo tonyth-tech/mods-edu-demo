@@ -1,8 +1,8 @@
 import './globals.css'
-import { Kanit } from 'next/font/google'
+import { Prompt } from 'next/font/google'
 import type { Metadata } from 'next'
 
-const kanit = Kanit({
+const prompt = Prompt({
   subsets: ['latin', 'thai'],
   weight: ['300', '400', '500', '600', '700'],
   display: 'swap',
@@ -20,7 +20,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="th">
-      <body className={kanit.className}>{children}</body>
+      <body className={prompt.className}>{children}</body>
     </html>
   )
 }

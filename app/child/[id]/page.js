@@ -285,7 +285,7 @@ export default function ChildProfilePage() {
                     border: '1px solid #d9e6f2',
                     background: '#fff',
                     cursor: 'pointer',
-                    fontWeight: 'bold',
+                    fontWeight: '500',
                     color: '#183153',
                   }}
                 >
@@ -348,7 +348,7 @@ export default function ChildProfilePage() {
               </div>
 
               {editMsg && (
-                <div style={{ marginTop: '10px', fontSize: '14px', color: '#2563eb', fontWeight: 'bold' }}>
+                <div style={{ marginTop: '10px', fontSize: '14px', color: '#2563eb', fontWeight: '500' }}>
                   {editMsg}
                 </div>
               )}
@@ -369,7 +369,7 @@ export default function ChildProfilePage() {
                 child.guardian_phone ? (
                   <a
                     href={`tel:${child.guardian_phone}`}
-                    style={{ color: '#2563eb', textDecoration: 'none', fontWeight: 'bold' }}
+                    style={{ color: '#2563eb', textDecoration: 'none', fontWeight: '400' }}
                   >
                     {child.guardian_phone}
                   </a>
@@ -412,6 +412,7 @@ function EditableCard({ label, value, setValue, unit }) {
             outline: 'none',
             boxSizing: 'border-box',
             background: '#fff',
+            fontWeight: '400',
           }}
         />
         <span style={{ fontSize: '13px', color: '#5b6b82', whiteSpace: 'nowrap' }}>{unit}</span>
@@ -445,18 +446,21 @@ const headerLabelStyle = {
   fontSize: '12px',
   opacity: 0.95,
   marginBottom: '4px',
+  fontWeight: '500',
 }
 
 const headerTitleStyle = {
   margin: 0,
   fontSize: '24px',
   lineHeight: 1.2,
+  fontWeight: '600',
 }
 
 const headerSubtitleStyle = {
   margin: '4px 0 0 0',
   fontSize: '14px',
   opacity: 0.95,
+  fontWeight: '400',
 }
 
 const mainCardStyle = {
@@ -501,13 +505,13 @@ const photoFallbackStyle = {
   alignItems: 'center',
   justifyContent: 'center',
   fontSize: '28px',
-  fontWeight: 'bold',
+  fontWeight: '600',
   color: '#183153',
 }
 
 const nicknameStyle = {
   fontSize: '24px',
-  fontWeight: 'bold',
+  fontWeight: '600',
   lineHeight: 1.2,
   color: '#183153',
 }
@@ -516,12 +520,14 @@ const fullnameStyle = {
   marginTop: '4px',
   fontSize: '16px',
   color: '#35506b',
+  fontWeight: '400',
 }
 
 const codeStyle = {
   marginTop: '6px',
   fontSize: '13px',
   color: '#5b6b82',
+  fontWeight: '400',
 }
 
 const badgeRowStyle = {
@@ -538,7 +544,7 @@ const softBadgeStyle = {
   background: '#eef6ff',
   color: '#183153',
   fontSize: '12px',
-  fontWeight: 'bold',
+  fontWeight: '500',
   border: '1px solid #d9e6f2',
 }
 
@@ -552,7 +558,7 @@ const editPanelStyle = {
 
 const editPanelTitleStyle = {
   fontSize: '14px',
-  fontWeight: 'bold',
+  fontWeight: '500',
   marginBottom: '10px',
   color: '#183153',
 }
@@ -574,11 +580,12 @@ const infoLabelStyle = {
   fontSize: '11px',
   color: '#5b6b82',
   marginBottom: '5px',
+  fontWeight: '400',
 }
 
 const infoValueStyle = {
   fontSize: '15px',
-  fontWeight: 'bold',
+  fontWeight: '400',
   color: '#183153',
   lineHeight: 1.4,
 }
