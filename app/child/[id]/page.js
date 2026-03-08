@@ -101,13 +101,17 @@ export default function ChildProfilePage() {
       return
     }
 
+    const newVersion = Date.now()
+
     setChild((prev) => ({
       ...prev,
       photo_url: publicUrl,
     }))
-    setPhotoVersion(Date.now())
+    setPhotoVersion(newVersion)
     setUploadMsg('อัปโหลดรูปสำเร็จแล้ว')
     setUploading(false)
+
+    event.target.value = ''
   }
 
   async function saveEdit() {
@@ -138,7 +142,6 @@ export default function ChildProfilePage() {
 
     setEditMsg('บันทึกข้อมูลแล้ว')
     setSavingEdit(false)
-    setIsEditing(false)
   }
 
   if (loading) {
@@ -225,6 +228,7 @@ export default function ChildProfilePage() {
             onClick={() => {
               setIsEditing((prev) => !prev)
               setEditMsg('')
+              setUploadMsg('')
             }}
             className="child-profile-btn child-profile-btn-secondary"
             style={{ minWidth: '48px', padding: '11px 14px' }}
@@ -238,6 +242,7 @@ export default function ChildProfilePage() {
           <div style={profileTopStyle}>
             <div style={photoWrapStyle}>
               <img
+                key={photoVersion}
                 src={photoSrc}
                 alt={displayNickname}
                 style={photoStyle}
@@ -264,69 +269,99 @@ export default function ChildProfilePage() {
                 <span style={softBadgeStyle}>{child.class_room || '-'}</span>
                 <span style={softBadgeStyle}>{child.status || '-'}</span>
               </div>
+            </div>
+          </div>
 
-              {isEditing && (
-                <div style={{ marginTop: '12px' }}>
-                  <label
-                    style={{
-                      display: 'inline-block',
-                      padding: '10px 14px',
-                      borderRadius: '12px',
-                      border: '1px solid #d9e6f2',
-                      background: '#fff',
-                      cursor: 'pointer',
-                      fontWeight: 'bold',
-                      color: '#183153',
-                    }}
-                  >
-                    {uploading ? 'กำลังอัปโหลด...' : 'อัปโหลดรูปเด็ก'}
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handlePhotoUpload}
-                      style={{ display: 'none' }}
-                      disabled={uploading}
-                    />
-                  </label>
+          {isEditing && (
+            <div style={editPanelStyle}>
+              <div style={editPanelTitleStyle}>แก้ไขข้อมูลที่ครูปรับได้</div>
 
-                  {uploadMsg && (
-                    <div style={{ marginTop: '8px', fontSize: '13px', color: '#2563eb' }}>
-                      {uploadMsg}
-                    </div>
-                  )}
+              <div style={{ marginBottom: '12px' }}>
+                <label
+                  style={{
+                    display: 'inline-block',
+                    padding: '10px 14px',
+                    borderRadius: '12px',
+                    border: '1px solid #d9e6f2',
+                    background: '#fff',
+                    cursor: 'pointer',
+                    fontWeight: 'bold',
+                    color: '#183153',
+                  }}
+                >
+                  {uploading ? 'กำลังอัปโหลด...' : 'อัปโหลดรูปเด็ก'}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handlePhotoUpload}
+                    style={{ display: 'none' }}
+                    disabled={uploading}
+                  />
+                </label>
+
+                {uploadMsg && (
+                  <div style={{ marginTop: '8px', fontSize: '13px', color: '#2563eb' }}>
+                    {uploadMsg}
+                  </div>
+                )}
+              </div>
+
+              <div style={infoGridStyle}>
+                <EditableCard
+                  label="ส่วนสูง"
+                  value={editHeight}
+                  setValue={setEditHeight}
+                  unit="ซม."
+                />
+
+                <EditableCard
+                  label="น้ำหนัก"
+                  value={editWeight}
+                  setValue={setEditWeight}
+                  unit="กก."
+                />
+              </div>
+
+              <div style={{ marginTop: '16px', display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                <button
+                  type="button"
+                  onClick={saveEdit}
+                  disabled={savingEdit}
+                  className="child-profile-btn child-profile-btn-primary"
+                >
+                  {savingEdit ? 'กำลังบันทึก...' : 'บันทึกการแก้ไข'}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsEditing(false)
+                    setEditHeight(child.height_cm ?? '')
+                    setEditWeight(child.weight_kg ?? '')
+                    setEditMsg('')
+                    setUploadMsg('')
+                  }}
+                  className="child-profile-btn child-profile-btn-secondary"
+                >
+                  ยกเลิก
+                </button>
+              </div>
+
+              {editMsg && (
+                <div style={{ marginTop: '10px', fontSize: '14px', color: '#2563eb', fontWeight: 'bold' }}>
+                  {editMsg}
                 </div>
               )}
             </div>
-          </div>
+          )}
 
           <div style={infoGridStyle}>
             <InfoCard label="ชื่อเล่น" value={child.nickname || '-'} />
             <InfoCard label="เพศ" value={child.gender || '-'} />
             <InfoCard label="อายุ" value={child.age_display || '-'} />
             <InfoCard label="ห้องเรียน" value={child.class_room || '-'} />
-
-            {isEditing ? (
-              <EditableCard
-                label="ส่วนสูง"
-                value={editHeight}
-                setValue={setEditHeight}
-                unit="ซม."
-              />
-            ) : (
-              <InfoCard label="ส่วนสูง" value={child.height_cm ? `${child.height_cm} ซม.` : '-'} />
-            )}
-
-            {isEditing ? (
-              <EditableCard
-                label="น้ำหนัก"
-                value={editWeight}
-                setValue={setEditWeight}
-                unit="กก."
-              />
-            ) : (
-              <InfoCard label="น้ำหนัก" value={child.weight_kg ? `${child.weight_kg} กก.` : '-'} />
-            )}
-
+            <InfoCard label="ส่วนสูง" value={child.height_cm ? `${child.height_cm} ซม.` : '-'} />
+            <InfoCard label="น้ำหนัก" value={child.weight_kg ? `${child.weight_kg} กก.` : '-'} />
             <InfoCard label="ผู้ปกครอง" value={child.guardian_name || '-'} />
             <InfoCard
               label="เบอร์โทรผู้ปกครอง"
@@ -342,38 +377,6 @@ export default function ChildProfilePage() {
               }
             />
           </div>
-
-          {isEditing && (
-            <div style={{ marginTop: '16px', display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-              <button
-                type="button"
-                onClick={saveEdit}
-                disabled={savingEdit}
-                className="child-profile-btn child-profile-btn-primary"
-              >
-                {savingEdit ? 'กำลังบันทึก...' : 'บันทึกการแก้ไข'}
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  setIsEditing(false)
-                  setEditHeight(child.height_cm ?? '')
-                  setEditWeight(child.weight_kg ?? '')
-                  setEditMsg('')
-                }}
-                className="child-profile-btn child-profile-btn-secondary"
-              >
-                ยกเลิก
-              </button>
-            </div>
-          )}
-
-          {editMsg && (
-            <div style={{ marginTop: '10px', fontSize: '14px', color: '#2563eb', fontWeight: 'bold' }}>
-              {editMsg}
-            </div>
-          )}
         </div>
       </div>
     </div>
@@ -537,6 +540,21 @@ const softBadgeStyle = {
   fontSize: '12px',
   fontWeight: 'bold',
   border: '1px solid #d9e6f2',
+}
+
+const editPanelStyle = {
+  marginBottom: '16px',
+  background: '#f8fbff',
+  border: '1px solid #e6eef5',
+  borderRadius: '16px',
+  padding: '14px',
+}
+
+const editPanelTitleStyle = {
+  fontSize: '14px',
+  fontWeight: 'bold',
+  marginBottom: '10px',
+  color: '#183153',
 }
 
 const infoGridStyle = {
