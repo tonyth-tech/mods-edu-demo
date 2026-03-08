@@ -11,12 +11,36 @@ export default function ChildProfilePage() {
   const [errorMsg, setErrorMsg] = useState('')
   const [uploading, setUploading] = useState(false)
   const [uploadMsg, setUploadMsg] = useState('')
+  const [isEditing, setIsEditing] = useState(false)
+  const [savingEdit, setSavingEdit] = useState(false)
+  const [editMsg, setEditMsg] = useState('')
+  const [editHeight, setEditHeight] = useState('')
+  const [editWeight, setEditWeight] = useState('')
+  const [photoVersion, setPhotoVersion] = useState(Date.now())
+  const [centerDisplayName, setCenterDisplayName] = useState('ศูนย์พัฒนาเด็กเล็กตำบลเหมืองจี้')
 
   useEffect(() => {
     if (params?.id) {
       fetchChild()
+      fetchCenter()
     }
   }, [params?.id])
+
+  async function fetchCenter() {
+    const { data } = await supabase
+      .from('centers')
+      .select('name, municipality_name')
+      .limit(1)
+
+    if (data && data.length > 0) {
+      const center = data[0]
+      if (center.name && center.name.trim() !== '') {
+        setCenterDisplayName(center.name.replace('เทศบาล', ''))
+      } else if (center.municipality_name && center.municipality_name.trim() !== '') {
+        setCenterDisplayName(`ศูนย์พัฒนาเด็กเล็ก${center.municipality_name.replace('เทศบาล', '')}`)
+      }
+    }
+  }
 
   async function fetchChild() {
     setLoading(true)
@@ -32,6 +56,9 @@ export default function ChildProfilePage() {
       setErrorMsg(error.message)
     } else {
       setChild(data)
+      setEditHeight(data?.height_cm ?? '')
+      setEditWeight(data?.weight_kg ?? '')
+      setPhotoVersion(Date.now())
     }
 
     setLoading(false)
@@ -78,9 +105,40 @@ export default function ChildProfilePage() {
       ...prev,
       photo_url: publicUrl,
     }))
-
+    setPhotoVersion(Date.now())
     setUploadMsg('อัปโหลดรูปสำเร็จแล้ว')
     setUploading(false)
+  }
+
+  async function saveEdit() {
+    if (!child) return
+
+    setSavingEdit(true)
+    setEditMsg('กำลังบันทึก...')
+
+    const { error } = await supabase
+      .from('children')
+      .update({
+        height_cm: editHeight === '' ? null : Number(editHeight),
+        weight_kg: editWeight === '' ? null : Number(editWeight),
+      })
+      .eq('id', child.id)
+
+    if (error) {
+      setEditMsg('บันทึกไม่สำเร็จ: ' + error.message)
+      setSavingEdit(false)
+      return
+    }
+
+    setChild((prev) => ({
+      ...prev,
+      height_cm: editHeight === '' ? null : Number(editHeight),
+      weight_kg: editWeight === '' ? null : Number(editWeight),
+    }))
+
+    setEditMsg('บันทึกข้อมูลแล้ว')
+    setSavingEdit(false)
+    setIsEditing(false)
   }
 
   if (loading) {
@@ -120,6 +178,8 @@ export default function ChildProfilePage() {
     ? `น้อง${child.nickname}`
     : `น้อง${child.first_name || ''}`
 
+  const photoSrc = `${child.photo_url || `/children/${child.child_code}.jpg`}?t=${photoVersion}`
+
   return (
     <div style={pageStyle}>
       <div style={containerStyle}>
@@ -127,34 +187,50 @@ export default function ChildProfilePage() {
           <div>
             <div style={headerLabelStyle}>MODS-EDU-DSPM</div>
             <h1 style={headerTitleStyle}>ข้อมูลเด็กเล็ก</h1>
+            <p style={headerSubtitleStyle}>{centerDisplayName}</p>
           </div>
         </div>
 
-        <div className="child-profile-actions">
-          <a href="/" className="child-profile-btn child-profile-btn-secondary">
-            กลับหน้าแรก
-          </a>
+        <div className="child-profile-actions" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+            <a href="/" className="child-profile-btn child-profile-btn-secondary">
+              กลับหน้าแรก
+            </a>
 
-          <a
-            href={`/assess/${child.id}`}
-            className="child-profile-btn child-profile-btn-primary"
-          >
-            บันทึกพัฒนาการ
-          </a>
+            <a
+              href={`/assess/${child.id}`}
+              className="child-profile-btn child-profile-btn-primary"
+            >
+              บันทึกพัฒนาการ
+            </a>
 
-          <a
-            href={`/report/${child.id}`}
-            className="child-profile-btn child-profile-btn-secondary child-profile-tablet-up"
-          >
-            ดูสมุดพก
-          </a>
+            <a
+              href={`/report/${child.id}`}
+              className="child-profile-btn child-profile-btn-secondary child-profile-tablet-up"
+            >
+              ดูสมุดพก
+            </a>
+
+            <button
+              type="button"
+              onClick={() => window.print()}
+              className="child-profile-btn child-profile-btn-secondary child-profile-desktop-only"
+            >
+              พิมพ์ข้อมูลเด็ก
+            </button>
+          </div>
 
           <button
             type="button"
-            onClick={() => window.print()}
-            className="child-profile-btn child-profile-btn-secondary child-profile-desktop-only"
+            onClick={() => {
+              setIsEditing((prev) => !prev)
+              setEditMsg('')
+            }}
+            className="child-profile-btn child-profile-btn-secondary"
+            style={{ minWidth: '48px', padding: '11px 14px' }}
+            title="แก้ไข"
           >
-            พิมพ์ข้อมูลเด็ก
+            ⚙️
           </button>
         </div>
 
@@ -162,7 +238,7 @@ export default function ChildProfilePage() {
           <div style={profileTopStyle}>
             <div style={photoWrapStyle}>
               <img
-                src={child.photo_url || `/children/${child.child_code}.jpg`}
+                src={photoSrc}
                 alt={displayNickname}
                 style={photoStyle}
                 onError={(e) => {
@@ -189,35 +265,37 @@ export default function ChildProfilePage() {
                 <span style={softBadgeStyle}>{child.status || '-'}</span>
               </div>
 
-              <div style={{ marginTop: '12px' }}>
-                <label
-                  style={{
-                    display: 'inline-block',
-                    padding: '10px 14px',
-                    borderRadius: '12px',
-                    border: '1px solid #d9e6f2',
-                    background: '#fff',
-                    cursor: 'pointer',
-                    fontWeight: 'bold',
-                    color: '#183153',
-                  }}
-                >
-                  {uploading ? 'กำลังอัปโหลด...' : 'อัปโหลดรูปเด็ก'}
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handlePhotoUpload}
-                    style={{ display: 'none' }}
-                    disabled={uploading}
-                  />
-                </label>
+              {isEditing && (
+                <div style={{ marginTop: '12px' }}>
+                  <label
+                    style={{
+                      display: 'inline-block',
+                      padding: '10px 14px',
+                      borderRadius: '12px',
+                      border: '1px solid #d9e6f2',
+                      background: '#fff',
+                      cursor: 'pointer',
+                      fontWeight: 'bold',
+                      color: '#183153',
+                    }}
+                  >
+                    {uploading ? 'กำลังอัปโหลด...' : 'อัปโหลดรูปเด็ก'}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handlePhotoUpload}
+                      style={{ display: 'none' }}
+                      disabled={uploading}
+                    />
+                  </label>
 
-                {uploadMsg && (
-                  <div style={{ marginTop: '8px', fontSize: '13px', color: '#2563eb' }}>
-                    {uploadMsg}
-                  </div>
-                )}
-              </div>
+                  {uploadMsg && (
+                    <div style={{ marginTop: '8px', fontSize: '13px', color: '#2563eb' }}>
+                      {uploadMsg}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </div>
 
@@ -226,8 +304,29 @@ export default function ChildProfilePage() {
             <InfoCard label="เพศ" value={child.gender || '-'} />
             <InfoCard label="อายุ" value={child.age_display || '-'} />
             <InfoCard label="ห้องเรียน" value={child.class_room || '-'} />
-            <InfoCard label="ส่วนสูง" value={child.height_cm ? `${child.height_cm} ซม.` : '-'} />
-            <InfoCard label="น้ำหนัก" value={child.weight_kg ? `${child.weight_kg} กก.` : '-'} />
+
+            {isEditing ? (
+              <EditableCard
+                label="ส่วนสูง"
+                value={editHeight}
+                setValue={setEditHeight}
+                unit="ซม."
+              />
+            ) : (
+              <InfoCard label="ส่วนสูง" value={child.height_cm ? `${child.height_cm} ซม.` : '-'} />
+            )}
+
+            {isEditing ? (
+              <EditableCard
+                label="น้ำหนัก"
+                value={editWeight}
+                setValue={setEditWeight}
+                unit="กก."
+              />
+            ) : (
+              <InfoCard label="น้ำหนัก" value={child.weight_kg ? `${child.weight_kg} กก.` : '-'} />
+            )}
+
             <InfoCard label="ผู้ปกครอง" value={child.guardian_name || '-'} />
             <InfoCard
               label="เบอร์โทรผู้ปกครอง"
@@ -243,6 +342,38 @@ export default function ChildProfilePage() {
               }
             />
           </div>
+
+          {isEditing && (
+            <div style={{ marginTop: '16px', display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+              <button
+                type="button"
+                onClick={saveEdit}
+                disabled={savingEdit}
+                className="child-profile-btn child-profile-btn-primary"
+              >
+                {savingEdit ? 'กำลังบันทึก...' : 'บันทึกการแก้ไข'}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setIsEditing(false)
+                  setEditHeight(child.height_cm ?? '')
+                  setEditWeight(child.weight_kg ?? '')
+                  setEditMsg('')
+                }}
+                className="child-profile-btn child-profile-btn-secondary"
+              >
+                ยกเลิก
+              </button>
+            </div>
+          )}
+
+          {editMsg && (
+            <div style={{ marginTop: '10px', fontSize: '14px', color: '#2563eb', fontWeight: 'bold' }}>
+              {editMsg}
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -258,10 +389,37 @@ function InfoCard({ label, value }) {
   )
 }
 
+function EditableCard({ label, value, setValue, unit }) {
+  return (
+    <div style={infoCardStyle}>
+      <div style={infoLabelStyle}>{label}</div>
+      <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+        <input
+          type="number"
+          step="0.1"
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          style={{
+            width: '100%',
+            padding: '10px 12px',
+            borderRadius: '10px',
+            border: '1px solid #d9e6f2',
+            fontSize: '15px',
+            color: '#183153',
+            outline: 'none',
+            boxSizing: 'border-box',
+            background: '#fff',
+          }}
+        />
+        <span style={{ fontSize: '13px', color: '#5b6b82', whiteSpace: 'nowrap' }}>{unit}</span>
+      </div>
+    </div>
+  )
+}
+
 const pageStyle = {
   minHeight: '100vh',
   background: 'linear-gradient(180deg, #f2f9ff 0%, #ffffff 100%)',
-  fontFamily: 'Arial, sans-serif',
   color: '#183153',
   padding: '16px',
 }
@@ -290,6 +448,12 @@ const headerTitleStyle = {
   margin: 0,
   fontSize: '24px',
   lineHeight: 1.2,
+}
+
+const headerSubtitleStyle = {
+  margin: '4px 0 0 0',
+  fontSize: '14px',
+  opacity: 0.95,
 }
 
 const mainCardStyle = {
